@@ -1,42 +1,54 @@
 const fs = require('fs');
 const path = require('path');
 
-module.exports = router => {
+module.exports = app => {
 
     fs.readFile('./db/db.json', 'utf-8', (err, data) => {
         if (err) throw err;
 
         var notes = JSON.parse(data);
-
-        router.get('/api/notes', function(req, res) {
+        
+        //GET route for retrieving the notes
+        app.get('/api/notes', (req, res) => {
             res.json(notes);
         });
 
-        router.post('/api/notes', function(req, res) {
+        // POST Route for api/notes setup
+        app.post('/api/notes', (req, res) => {
+            // 
             let newNote = req.body;
+            newNote.id = Math.max(... notes.map(obj=>obj.id)) + 1;
             notes.push(newNote);
             updateDb();
             return console.log('Added new note:' +newNote.title);
         });
 
-        router.get('/api/notes/:${id}', function(req,res){
+        // GET route for updating the db with specific id
+        app.get('/:$notes/:id', (req,res) => {
             res.json(notes[req.params.id])
         });
 
-        router.delete('/api/notes/:${id}', function(req, res) {
-            notes.splice(req.params.id, 1);
+        // DELETE Route for a specific note id
+        app.delete('/api/notes/:id', (req, res) => {
+            // Splice method removes array elements
+            notes = notes.filter(obj => obj.id != req.params.id);
+
+            console.log(notes);
             updateDb();
             console.log('Deleted note with id'+ req.params.id);
         });
 
-        router.get ('/notes', function(re1,res) {
+        //GET Route for notes page
+        app.get ('/notes', (req,res) => {
             res.sendFile(path.join(__dirname, '../public/notes.html'));
         });
-
-        router.get('*', function(req,res){
+        
+        //Wildcard route to direct users to homepage
+        app.get('*', (req,res) => {
             res.sendFile(path.join(__dirname, '../public/index.html'));
         });
 
+        // Function to update whenever a note is added or deleted
         function updateDb() {
             fs.writeFile('db/db.json', JSON.stringify(notes,'\t'), err => {
                 if (err) throw err;
@@ -45,75 +57,3 @@ module.exports = router => {
         }
     });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const router = require('express').Router();
-// const { v4: uuidv4 } = require('uuid');
-// const { readAndAppend, readFromFile } = require('../helpers/fsUtils');
-// const fs = require('fs');
-// const db = require('../db/db.json');
-// const obj = JSON.parse(JSON.stringify(db));
-// console.log(obj);
-
-
-// router.get('/', (req, res) => res.sendFile(notes));
-
-
-
-
-
-// // GET Route for retrieving all the notes
-// router.get('/', (req, res) =>
-//     readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)))
-// );
-
-// // POST Route for submitting the notes
-// router.post('/', (req, res) => {
-//     // Destructuring assignment for the items in req.body
-//     const { title, text } = req.body;
-
-//     // If all the required properties are present
-//     if (title && text) {
-//         // Variable for the object we will save
-//         const newNote = {
-//             title,
-//             text,
-//             note_id: uuidv4(),
-//         };
-
-//         readAndAppend(newNote, './db/db.json');
-
-//         const response = {
-//             status: 'success',
-//             body: newNote,
-//         };
-
-//         res.json(response);
-//     } else {
-//         res.json('Error in posting note');
-//     }
-// });
-
-// module.exports = router;

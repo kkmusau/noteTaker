@@ -5,19 +5,19 @@ const path = require('path');
 
 
 
-// Initialize express router
-const router = express();
+// Initialize express app
+const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware for parsing JSON and urlencoded form data
-router.use(express.urlencoded({ extended: true }));
-router.use(express.json());
-router.use(express.static(__dirname));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static(__dirname));
 
 //Require routes file
-require('./routes/index')(router);
+require('./routes/index')(app);
 
 // Setup listener
-router.listen(PORT, () =>
-    console.log(`router listening at http://localhost:${PORT} 🚀`)
+app.listen(PORT, () =>
+    console.log(`app listening at http://localhost:${PORT} 🚀`)
 );
