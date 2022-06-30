@@ -17,6 +17,7 @@ module.exports = app => {
         app.post('/api/notes', (req, res) => {
             // 
             let newNote = req.body;
+            // adds id to new notes
             newNote.id = Math.max(... notes.map(obj=>obj.id)) + 1;
             notes.push(newNote);
             updateDb();
@@ -30,7 +31,7 @@ module.exports = app => {
 
         // DELETE Route for a specific note id
         app.delete('/api/notes/:id', (req, res) => {
-            // Splice method removes array elements
+            // filters notes to delete by note id
             notes = notes.filter(obj => obj.id != req.params.id);
 
             console.log(notes);
